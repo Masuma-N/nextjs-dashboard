@@ -1,17 +1,16 @@
-// Redeploy trigger for Vercel
-
-
 import Form from '@/app/ui/invoices/edit-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
+import type { PageProps } from '../../../../types/page'; 
+
+
+
 
 export default async function Page({
   params,
-}: {
-  params: { id: string };
-}): Promise<ReactElement> {
+}: PageProps): Promise<ReactElement> {
   const id = params.id;
 
   const [invoice, customers] = await Promise.all([
@@ -38,8 +37,8 @@ export default async function Page({
       <Form invoice={invoice} customers={customers} />
     </main>
   );
-} 
-// cries tear emoji 
+}
+
 
 
 
