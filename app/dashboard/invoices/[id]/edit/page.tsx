@@ -1,21 +1,14 @@
+import { notFound } from 'next/navigation';
 import Form from '@/app/ui/invoices/edit-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
-import { notFound } from 'next/navigation';
-import type { ReactElement } from 'react'; 
+import type { ReactElement } from 'react';
 
-
-//new 
-
-interface PageProps {
-  params: { 
-    id: string;
-  };
-} 
-
-export default async function Page({ params }: PageProps): Promise<ReactElement> {
-
-
+export default async function Page({
+  params,
+}: {
+  params: { id: string };
+}): Promise<ReactElement> {
   const id = params.id;
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
@@ -23,11 +16,11 @@ export default async function Page({ params }: PageProps): Promise<ReactElement>
   ]);
 
   if (!invoice) {
-    notFound(); // this should be inside the function
+    notFound();
   }
 
   return (
-    <main> 
+    <main>
       <Breadcrumbs
         breadcrumbs={[
           { label: 'Invoices', href: '/dashboard/invoices' },
@@ -39,8 +32,9 @@ export default async function Page({ params }: PageProps): Promise<ReactElement>
         ]}
       />
       <Form invoice={invoice} customers={customers} />
-    </main> 
+    </main>
   );
-}
+} 
+
 
 
