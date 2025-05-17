@@ -3,7 +3,7 @@ import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
-import type { PageProps } from '../../../../types/page'; 
+import type { PageProps } from '@/app/types/page'; 
 
 
 
@@ -20,7 +20,7 @@ export default async function Page({
 
   if (!invoice) {
     notFound();
-  }
+  } 
 
   return (
     <main>
