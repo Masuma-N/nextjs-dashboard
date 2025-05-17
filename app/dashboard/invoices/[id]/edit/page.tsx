@@ -2,13 +2,12 @@ import Form from '@/app/ui/invoices/edit-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
-import type { ReactElement } from 'react';
 
-export default async function Page({
-  params,
-}: {
+interface Props {
   params: { id: string };
-}): Promise<ReactElement> {
+}
+
+export default async function Page({ params }: Props) {
   const id = params.id;
   const [invoice, customers] = await Promise.all([
     fetchInvoiceById(id),
@@ -30,11 +29,12 @@ export default async function Page({
             active: true,
           },
         ]}
-      />
+      /> 
       <Form invoice={invoice} customers={customers} />
-    </main> 
+    </main>
   );
 } 
+
 
 
 
