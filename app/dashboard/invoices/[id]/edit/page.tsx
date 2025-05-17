@@ -7,7 +7,9 @@ import type { ReactElement } from 'react';
 export default async function Page({
   params,
 }: {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 }): Promise<ReactElement> {
   const id = params.id;
 
@@ -36,6 +38,7 @@ export default async function Page({
     </main>
   );
 } 
+
 
 
 
