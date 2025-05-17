@@ -1,11 +1,26 @@
+import type { Metadata } from 'next';
 import Form from '@/app/ui/invoices/edit-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchInvoiceById, fetchCustomers } from '@/app/lib/data';
 import { notFound } from 'next/navigation';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const invoice = await fetchInvoiceById(params.id);
-  const customers = await fetchCustomers();
+// CORRECT way to define the type for App Router route params
+type Props = {
+  params: {
+    id: string; 
+  };
+};
+
+export const metadata: Metadata = {
+  title: 'Edit Invoice',
+};
+
+export default async function Page({ params }: Props) {
+  const id = params.id;
+  const [invoice, customers] = await Promise.all([
+    fetchInvoiceById(id),
+    fetchCustomers(),
+  ]);
 
   if (!invoice) {
     notFound();
@@ -18,7 +33,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           { label: 'Invoices', href: '/dashboard/invoices' },
           {
             label: 'Edit Invoice',
-            href: `/dashboard/invoices/${params.id}/edit`,
+            href: `/dashboard/invoices/${id}/edit`,
             active: true,
           },
         ]}
@@ -26,7 +41,8 @@ export default async function Page({ params }: { params: { id: string } }) {
       <Form invoice={invoice} customers={customers} />
     </main>
   );
-} 
+}
+
 
  
 
