@@ -1,16 +1,19 @@
 import { Suspense } from 'react';
-import RevenueChart from './revenue-chart';
+import dynamic from 'next/dynamic';
 import LatestInvoices from './latest-invoices';
 import { lusitana } from '@/app/ui/fonts';
+
+const RevenueChart = dynamic(() => import('./revenue-chart'), {
+  ssr: false,
+  loading: () => <div>Loading chart...</div>,
+});
 
 export default function Page() {
   return (
     <main className="flex w-full flex-col gap-6">
       <h1 className={`${lusitana.className} text-2xl`}>Dashboard</h1>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-        <Suspense fallback={<div>Loading chart...</div>}>
-          <RevenueChart />
-        </Suspense>
+        <RevenueChart />
 
         <Suspense fallback={<div>Loading invoices...</div>}>
           <LatestInvoices />
@@ -19,5 +22,6 @@ export default function Page() {
     </main>
   );
 } 
+
 
 
