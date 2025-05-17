@@ -9,14 +9,14 @@ export default function Page() {
       <h1 className={`${lusitana.className} text-2xl`}>Dashboard</h1>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
         <RevenueChartWrapper />
-        
         <Suspense fallback={<div>Loading invoices...</div>}>
           <LatestInvoices />
         </Suspense>
-      </div>
+      </div> 
     </main>
   );
-} 
+}
+
 
 
 
