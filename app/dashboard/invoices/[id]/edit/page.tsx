@@ -32,10 +32,9 @@ export default async function Page({
         ]}
       />
       <Form invoice={invoice} customers={customers} />
-    </main>
+    </main> 
   );
-} //new 
-
+} 
 
 
 
