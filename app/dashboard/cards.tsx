@@ -14,7 +14,8 @@ const iconMap = {
   invoices: InboxIcon,
 };
 
-export default async function CardWrapper() {
+// This matches the import { Cards } from '@/app/dashboard'
+export default async function Cards() {
   const {
     numberOfInvoices,
     numberOfCustomers,
@@ -34,7 +35,7 @@ export default async function CardWrapper() {
       />
     </>
   );
-} 
+}
 
 export function Card({
   title,
@@ -60,5 +61,6 @@ export function Card({
         {value}
       </p>
     </div>
-  ); 
-}
+  );
+} 
+

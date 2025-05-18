@@ -5,8 +5,9 @@ import {
   Revenue,
   InvoicesTable,
   CustomerField,
+  FormattedCustomersTable,
   Invoice,
-} from './definitions'; 
+} from './definitions';
 
 // Fetch revenue chart data
 export async function fetchRevenue(): Promise<Revenue[]> {
@@ -18,7 +19,7 @@ export async function fetchRevenue(): Promise<Revenue[]> {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
   }
-} 
+}
 
 // Fetch latest 5 invoices
 export async function fetchLatestInvoices(): Promise<LatestInvoice[]> {
@@ -32,7 +33,7 @@ export async function fetchLatestInvoices(): Promise<LatestInvoice[]> {
 
   const latestInvoices: LatestInvoice[] = data.rows.map((invoice) => ({
     id: invoice.id,
-    name: invoice.name, 
+    name: invoice.name,
     email: invoice.email,
     image_url: invoice.image_url,
     amount: formatCurrency(invoice.amount),
@@ -66,14 +67,38 @@ export async function fetchCardData() {
   };
 }
 
-// Fetch dropdown customer list
-export async function fetchCustomers(): Promise<CustomerField[]> {
+// ✅ Full data for Customers Table
+export async function fetchCustomers(): Promise<FormattedCustomersTable[]> {
   try {
-    const data = await sql<CustomerField>`SELECT id, name FROM customers`;
-    return data.rows as CustomerField[];
+    const data = await sql<CustomerField>`
+      SELECT
+        customers.id,
+        customers.name,
+        customers.email,
+        customers.image_url,
+        COUNT(invoices.id) AS total_invoices,
+        SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
+        SUM(CASE WHEN invoices.status = 'paid' THEN invoices.amount ELSE 0 END) AS total_paid
+      FROM customers
+      LEFT JOIN invoices ON customers.id = invoices.customer_id
+      GROUP BY customers.id, customers.name, customers.email, customers.image_url
+      ORDER BY customers.name ASC
+    `;
+
+    const customers = data.rows.map((customer) => ({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      image_url: customer.image_url,
+      total_invoices: Number(customer.total_invoices),
+      total_pending: formatCurrency(customer.total_pending),
+      total_paid: formatCurrency(customer.total_paid),
+    }));
+
+    return customers;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch customers.');
+    throw new Error('Failed to fetch customer data.');
   }
 }
 
@@ -89,10 +114,11 @@ export async function fetchInvoiceById(id: string): Promise<Invoice | undefined>
   } catch (error) {
     console.error('Failed to fetch invoice by ID:', error);
     throw new Error('Failed to fetch invoice.');
-  } 
+  }
 }
+
 export async function fetchInvoicesPages(query: string) {
-  try { 
+  try {
     const count = await sql`SELECT COUNT(*) FROM invoices 
       JOIN customers ON invoices.customer_id = customers.id
       WHERE customers.name ILIKE ${`%${query}%`}`;
@@ -103,7 +129,16 @@ export async function fetchInvoicesPages(query: string) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
   }
-} 
+}
+
+export type InvoiceTableRow = {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  amount: number;
+  status: string;
+};
+
 export async function fetchFilteredInvoices(
   query: string,
   currentPage: number
@@ -128,15 +163,22 @@ export async function fetchFilteredInvoices(
     console.error('Database Error:', error);
     throw new Error('Failed to fetch filtered invoices.');
   }
+}  
+// For form dropdowns (raw list of customers without formatting)
+export async function fetchCustomerList(): Promise<CustomerField[]> {
+  try {
+    const data = await sql<CustomerField>`
+      SELECT id, name FROM customers
+    `;
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch customer list.');
+  }
 } 
-// Fetch all invoices for the table
-export type InvoiceTableRow = {
-  id: string;
-  customer_name: string;
-  customer_email: string;
-  amount: number;
-  status: string;
-}; 
+
+
+
 
 
 
